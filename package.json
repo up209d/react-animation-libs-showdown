@@ -14,6 +14,7 @@
     "dev-mon-dll": "NODE_PATH=./:./src:./src/js ./node_modules/nodemon/bin/nodemon.js --config ./nodemon.json --exec ./node_modules/babel-cli/bin/babel-node.js ./server/server.development.dll.js",
     "dev-mon-win": "NODE_PATH=./;./src;./src/js ./node_modules/nodemon/bin/nodemon.js --config ./nodemon.json --exec ./node_modules/babel-cli/bin/babel-node.js ./server/server.development.js",
     "dev": "npm run clean && echo 'Running Development ...' && npm run env-development && npm run dev-mon",
+    "dll": "npm run clean && echo 'Running Development ...' && npm run env-development && npm run dev-mon-dll",
     "dev-dll": "npm run clean && echo 'Running Development ...' && npm run env-development && npm run dev-mon-dll",
     "dev-win": "npm run clean && echo 'Running Development ...' && npm run env-development && npm run dev-mon-win",
     "prod": "node ./node_modules/babel-cli/bin/babel.js ./server/server.production.js -o ./server/server.production.legacy.js && NODE_PATH=./:./src:./src/js node ./server/server.production.legacy.js",
