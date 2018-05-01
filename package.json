@@ -23,7 +23,11 @@
     "build-win": "npm run clean && echo 'Running Production ...' && npm run env-production && npm run prod-win"
   },
   "keywords": [
-    "Experiment","with","React","Animation","Libraries"
+    "Experiment",
+    "with",
+    "React",
+    "Animation",
+    "Libraries"
   ],
   "author": "UP",
   "license": "ISC",
