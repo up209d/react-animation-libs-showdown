@@ -54,9 +54,14 @@ const webpackConfig = {
       favicon: './src/assets/images/favicon.ico',
       template: './src/index.html'
     }),
-    new AddAssetHtmlPlugin([
-      {filepath: glob.sync(path.resolve(__dirname, './lib/*_dll.js'))[0]}
-    ]),
+    new AddAssetHtmlPlugin(
+      glob.sync(path.resolve(__dirname, './lib/*_dll.js')).map(file => (
+        {
+          filepath: glob.sync(path.resolve(__dirname, './lib/*_dll.js'))[0],
+          hash: true
+        }
+      ))
+    ),
     // Copy Extras Files
     new CopyWebpackPlugin([
       // Remember the root folder for the destination is the global output path of config already
@@ -110,6 +115,11 @@ const webpackConfig = {
     concatenateModules: true, //ModuleConcatenationPlugin
     splitChunks: {
       cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendorBundle',
+          chunks: 'all'
+        },
         styles: {
           test: /\.css$/,
           name: 'stylesBundle',
@@ -318,16 +328,29 @@ function ResetRequireCache(options) {
 };
 
 ResetRequireCache.prototype.apply = function (compiler) {
-  compiler.plugin('done', function (stats) {
-    console.log('Global Context: ',compiler.options.context);
-    // Clear the cache if of all file in ./src folder
-    stats.compilation.fileDependencies.forEach(dependency => {
-      if (dependency.match(/(\/src\/)(.*)\.(jsx?)$/) !== null) {
-        console.log('- Clear Cache - : ', dependency);
-        delete require.cache[dependency];
-      }
+  // Webpack 4
+  if (compiler.hooks && compiler.hooks.compilation) {
+    compiler.hooks.done.tap('ResetRequireCache',stats => {
+      stats.compilation.fileDependencies.forEach(dependency => {
+        if (dependency.match(/(\/src\/)(.*)\.(jsx?)$/) !== null) {
+          console.log('- Clear Cache - : ', dependency);
+          delete require.cache[dependency];
+        }
+      });
+    })
+  } else {
+    // Webpack 3 Fallback
+    compiler.plugin('done', function (stats) {
+      console.log('Global Context: ',compiler.options.context);
+      // Clear the cache if of all file in ./src folder
+      stats.compilation.fileDependencies.forEach(dependency => {
+        if (dependency.match(/(\/src\/)(.*)\.(jsx?)$/) !== null) {
+          console.log('- Clear Cache - : ', dependency);
+          delete require.cache[dependency];
+        }
+      });
     });
-  });
+  }
 };
 
 export default webpackConfig;
